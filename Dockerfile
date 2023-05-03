@@ -6,17 +6,14 @@ LABEL description="Docker Container with a complete build environment for Tasmot
       organization="https://github.com/tasmota"       
 
 # Install platformio. 
-RUN pip install --upgrade pip &&\ 
-    pip install --upgrade platformio
+RUN pip install -U platformio
 
 # Init project
 COPY init_pio_tasmota /init_pio_tasmota
 
 # Install project dependencies using a init project.
 RUN cd /init_pio_tasmota &&\ 
-    platformio upgrade &&\
-    pio pkg update &&\
-    pio run &&\
+    pio run -e esp8266 -e esp32 &&\
     cd ../ &&\ 
     rm -fr init_pio_tasmota &&\ 
     cp -r /root/.platformio / &&\ 
@@ -28,4 +25,3 @@ RUN cd /init_pio_tasmota &&\
 COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
-
